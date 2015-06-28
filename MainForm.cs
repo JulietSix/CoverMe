@@ -96,7 +96,6 @@ namespace CoverMe
 				Logger.logException("Error initialising form", ex);
 				MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Environment.Exit(1);
-				return;
 			}
 		}
 		

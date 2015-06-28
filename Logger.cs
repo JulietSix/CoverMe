@@ -18,9 +18,21 @@ namespace CoverMe
 	/// </summary>
 	public class Logger
 	{
+		/// <summary>
+		/// Simply used to have an object referenced by the GC-list do be finalized when the
+		/// program is terminated, presenting a way to close the log when the program is
+		/// terminated through Environment.Exit()
+		/// </summary>
+		private class FinalizerDummy {
+			~FinalizerDummy() {
+				Logger.FinishLogging();
+			}
+		}
+		
 		private Logger() {}
 		
 		static int startTime = 0;
+		private static FinalizerDummy mFinalizer = new FinalizerDummy();
 		
 		/// <summary>
 		/// Logs an Exception
@@ -62,6 +74,13 @@ namespace CoverMe
 			Console.Write(sTimeMilis);
 			Console.Write(' ');
 			Console.WriteLine(s);
+		}
+		
+		/// <summary>
+		/// Stops logging on program termination, flushing IO streams
+		/// </summary>
+		private static void FinishLogging() {
+			Console.Out.Flush();
 		}
 	}
 }

@@ -36,9 +36,6 @@ namespace CoverMe
 				MessageBox.Show(e.Message, "Error - " + e.GetType().ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
 				Logger.logException("Unexpected Exception, program is terminating", e);
 			}
-			finally {
-				Console.Out.Flush();
-			}
 		}
 		
 		private static void run()
