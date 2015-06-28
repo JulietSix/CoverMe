@@ -27,6 +27,7 @@ namespace CoverMe
 		public const int TRIGGER_TIMEOUT = 1000;
 		public const int MAXIMUM_TRIES = 3;
 		
+		int lastSmartTriggerStageTime;
 		int lastTriggerTime;
 		int smartTriggerStage;
 		uint errorCode;
@@ -76,6 +77,7 @@ namespace CoverMe
 				
 				SpecialKeyHelper.StrokeDelay = lowFPSmode ? 200 : 50;
 
+				lastSmartTriggerStageTime = 0;
 				lastTriggerTime = 0;
 				smartTriggerStage = 0;
 				
@@ -144,18 +146,18 @@ namespace CoverMe
 						Logger.log(teamCode.ToString() + " or " + squadCode.ToString() + " is down, stage=1");
 					
 					smartTriggerStage = 1;
-					lastTriggerTime = Environment.TickCount;
+					lastSmartTriggerStageTime = Environment.TickCount;
 				}
-				if (InputSimulator.IsKeyDown(VirtualKeyCode.VK_4) && smartTriggerStage == 1 && Environment.TickCount - lastTriggerTime < smartTriggerTimeout)
+				if (InputSimulator.IsKeyDown(VirtualKeyCode.VK_4) && smartTriggerStage == 1 && Environment.TickCount - lastSmartTriggerStageTime < smartTriggerTimeout)
 				{
 					if (smartTriggerStage != 2)
 						Logger.log("VK_4 is down, stage=2");
 					smartTriggerStage = 2;
-					lastTriggerTime = Environment.TickCount;
+					lastSmartTriggerStageTime = Environment.TickCount;
 				}
 				if (InputSimulator.IsKeyDown(VirtualKeyCode.VK_1) || InputSimulator.IsKeyDown(VirtualKeyCode.VK_2))
 				{
-					if (smartTriggerStage == 2 && Environment.TickCount - lastTriggerTime < smartTriggerTimeout)
+					if (smartTriggerStage == 2 && Environment.TickCount - lastSmartTriggerStageTime < smartTriggerTimeout)
 					{
 						Logger.log("VK_1 or VK_2 is down, stage=0");
 						Logger.log("SmartTrigger is now triggered");
