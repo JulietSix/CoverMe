@@ -35,6 +35,7 @@ namespace CoverMe
 		
 		VirtualKeyCode squadCode = VirtualKeyCode.VK_K;
 		VirtualKeyCode teamCode = VirtualKeyCode.VK_T;
+		
 		int smartTriggerTimeout = 1000;
 		bool useSmartTrigger = true;
 		
@@ -75,7 +76,7 @@ namespace CoverMe
 				
 				SpecialKeyHelper.StrokeDelay = lowFPSmode ? 200 : 50;
 
-				lastTriggerTime = Environment.TickCount;
+				lastTriggerTime = 0;
 				smartTriggerStage = 0;
 				
 				// Prepare UI elements
@@ -101,15 +102,34 @@ namespace CoverMe
 		
 		void TimerUpdateTick(object sender, EventArgs e)
 		{
-			if (isTriggered())
+			if (isTriggered() && canRetriggerAlready())
 			{
-				Logger.log("Triggered - firing CoverMe");
+				Logger.log("Firing CoverMe-action");
 				
 				if (!backgroundWorker.IsBusy)
 					backgroundWorker.RunWorkerAsync();
 				else
 					Logger.log("Worker is busy. Aborting");
 			}
+		}
+		
+		/// <summary>
+		/// Checks wether CoverMe! can already post the altitude again, or if
+		/// the timeout criteria is not met yet. This prevents repeatedly re-
+		/// triggering if keys are held down.
+		/// </summary>
+		/// <returns>True if can retrigger, otherwise false</returns>
+		bool canRetriggerAlready() {
+				if (Environment.TickCount - lastTriggerTime > TRIGGER_TIMEOUT)
+				{
+					lastTriggerTime = Environment.TickCount;
+					return true;
+				}
+				else
+				{
+					Logger.log("Cannot retrigger already, timeout not met");
+					return false;
+				}
 		}
 		
 		/// <summary>
@@ -139,7 +159,7 @@ namespace CoverMe
 					if (smartTriggerStage == 2 && Environment.TickCount - lastTriggerTime < smartTriggerTimeout)
 					{
 						Logger.log("VK_1 or VK_2 is down, stage=0");
-						Logger.log("SmartTrigger is now TRIGGERED");
+						Logger.log("SmartTrigger is now triggered");
 						smartTriggerStage = 0;
 						return true;
 					}
@@ -149,11 +169,10 @@ namespace CoverMe
 			else {
 				bool keystate = InputSimulator.IsKeyDown(triggerCode);
 			
-				if (keystate && Environment.TickCount - lastTriggerTime > TRIGGER_TIMEOUT)
+				if (keystate)
 				{
 					Logger.log("Trigger key '" +  triggerCode.ToString() + "' is held down");
-					Logger.log("Trigger is now TRIGGERED");
-					lastTriggerTime = Environment.TickCount;
+					Logger.log("Trigger is now triggered");
 					return true;
 				}
 			}
