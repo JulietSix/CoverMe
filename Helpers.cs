@@ -1,0 +1,41 @@
+/* 
+ * CoverMe! - Copyright (C) 2015 Juliet_Six
+ * 
+ * This file is part of "CoverMe!". "CoverMe!" is licensed under
+ * the Microsoft Public License. You should have received a copy
+ * of this license together with this file. Otherwise, see 
+ * http://www.microsoft.com/en-us/openness/licenses.aspx
+ *
+ */
+
+using System;
+
+namespace CoverMe
+{
+	/// <summary>
+	/// Collection of general helper-functions
+	/// </summary>
+	public class Helpers
+	{
+		public const double METER_PER_FEET = 0.3048;
+		
+		private Helpers() {}
+		
+		/// <summary>
+		/// Rounds an Integer to a pre-decimal position
+		/// </summary>
+		/// <param name="Number">The number to round</param>
+		/// <param name="ZeroesPreDecimal">Amount of Zeroes that should preceed the decimal</param>
+		/// <returns>The rounded number</returns>
+		public static int RoundPreDecimal(int Number, int ZeroesPreDecimal) {
+			double d = Number;
+			double divisor = Math.Pow(10, ZeroesPreDecimal);
+			
+			d /= divisor;
+			d = Math.Round(d);
+			d *= divisor;
+			
+			return (int)d;
+		}
+	}
+}

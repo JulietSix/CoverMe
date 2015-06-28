@@ -1,0 +1,42 @@
+# Settings file for CoverMe
+
+# 'TypeHeading' defines wether the Heading should be typed as well.
+# Settings are True (enabled) and False (disabled)
+
+TypeHeading=True
+
+# Enable 'LowFpsMode' when you play Warthunder with less than 25 FPS. CoverMe will wait
+# significantly longer between pushing down and releasing the return key to type the 
+# message, allowing the Update-logic of Warthunder to detect that the key was indeed pressed
+# during a frame-cycle on slow computers.
+
+LowFpsMode=False
+
+# If the SmartTrigger is enabled, whenever you press T-4-1 or T-4-2 (with a maximum of 
+# 1 second in between the strokes), CoverMe will be triggered. If the SmartTrigger is
+# disabled, CoverMe will be triggered when pressing the key defined by 'Trigger'
+# Settings are True (enabled) and False (disabled)
+
+UseSmartTrigger=True
+
+# The following settings only apply when SmartTrigger is enabled
+# 'TeamQuickChatKey' and 'SquadQuickChatKey' define which keys are used to open the quick
+# chat menu for both team and squad chat, as the name suggests. If you do not want to use 
+# both, bind them to the same key. (Imagine you only want to print altitude when using team 
+# chat, bind both team- and squad-chat to VK_T, that is if you are using the default 'T'-
+# key for team-quickchat)
+
+TeamQuickChatKey=VK_T
+SquadQuickChatKey=VK_K
+
+# 'SmartTriggerTimeout' is the amount of miliseconds that can pass in between keystrokes.
+# For example if this setting is 1000, between each of the strokes T-4-2 a maximum of 1
+# second may pass, otherwise it will not be detected
+
+SmartTriggerTimeout=1000
+
+# The following settings only apply when SmartTrigger is disabled
+# 'Trigger' is the virtual key code of the key that triggers CoverMe
+# For a list of virtual key codes consult KeyNames.txt
+
+Trigger=VK_Z
