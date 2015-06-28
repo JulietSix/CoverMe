@@ -236,9 +236,7 @@ namespace CoverMe
 				return true;
 			}
 			catch (Exception ex) {
-				Logger.log("Exception while fetching data:");
-				Logger.log(ex.GetType().ToString() + " - " + ex.Message);
-				Logger.log(ex.StackTrace);
+				Logger.logException("Exception while fetching data", ex);
 				
 				return false;
 			}

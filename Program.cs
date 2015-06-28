@@ -34,9 +34,7 @@ namespace CoverMe
 			}
 			catch (Exception e) {
 				MessageBox.Show(e.Message, "Error - " + e.GetType().ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
-				Logger.log("FATAL ERROR");
-				Logger.log(e.GetType().ToString() + " - " + e.Message);
-				Logger.log(e.StackTrace);
+				Logger.logException("Unexpected Exception, program is terminating", e);
 			}
 			finally {
 				Console.Out.Flush();
