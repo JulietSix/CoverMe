@@ -9,6 +9,8 @@
  */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CoverMe
 {
@@ -17,6 +19,8 @@ namespace CoverMe
 	/// </summary>
 	public class Helpers
 	{
+		private static readonly char[] ARRAY_SEPARATORS = { ',' };
+		
 		public const double METER_PER_FEET = 0.3048;
 		
 		private Helpers() {}
@@ -36,6 +40,23 @@ namespace CoverMe
 			d *= divisor;
 			
 			return (int)d;
+		}
+		
+		/// <summary>
+		/// Parses a string containing multiple enumerators of the same type seperated by ','
+		/// and returns a collection of those enumerators.
+		/// </summary>
+		/// <param name="s">String to be parsed</param>
+		/// <returns>Collection of found enumerators</returns>
+		public static List<T> ParseEnumArray<T>(string s) {			
+			string[] elements = s.Split(Helpers.ARRAY_SEPARATORS);
+			
+			List<T> enums = new List<T>();
+			
+			foreach(string element in elements)
+				enums.Add((T)Enum.Parse(typeof(T), element));
+			
+			return enums;
 		}
 	}
 }
