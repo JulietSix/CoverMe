@@ -32,10 +32,9 @@ namespace CoverMe
 		int smartTriggerStage;
 		uint errorCode;
 
-		VirtualKeyCode triggerCode = VirtualKeyCode.VK_Z;
+		List<VirtualKeyCode> simpleTriggerCodes;
 		
-		VirtualKeyCode squadCode = VirtualKeyCode.VK_K;
-		VirtualKeyCode teamCode = VirtualKeyCode.VK_T;
+		List<VirtualKeyCode> quickChatCodes;
 		
 		int smartTriggerTimeout = 1000;
 		bool useSmartTrigger = true;
@@ -54,17 +53,14 @@ namespace CoverMe
 				// Load settings
 				Properties.LoadSettings();
 
-				triggerCode = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), Properties.GetSetting("Trigger", "VK_Z"));
-				Logger.log("Loaded setting Trigger=" + triggerCode.ToString());
+				simpleTriggerCodes = Helpers.ParseEnumArray<VirtualKeyCode>(Properties.GetSetting("SimpleTriggerKeys", "VK_Z"));
+				Logger.log("Loaded setting SimpleTriggerKeysr=" + Properties.GetSetting("SimpleTriggerKeys", "VK_Z"));
 				
 				useSmartTrigger = Boolean.Parse(Properties.GetSetting("UseSmartTrigger", "True"));
 				Logger.log("Loaded setting UseSmartTrigger=" + useSmartTrigger.ToString());
 				
-				teamCode = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), Properties.GetSetting("TeamQuickChatKey", "VK_T"));
-				Logger.log("Loaded setting TeamQuickChatKey=" + teamCode.ToString());
-				
-				squadCode = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), Properties.GetSetting("SquadQuickChatKey", "VK_K"));
-				Logger.log("Loaded setting SquadQuickChatKey=" + squadCode.ToString());
+				quickChatCodes = Helpers.ParseEnumArray<VirtualKeyCode>(Properties.GetSetting("QuickChatKeys", "VK_K,VK_T"));
+				Logger.log("Loaded setting QuickChatKeys=" + Properties.GetSetting("QuickChatKeys", "VK_K,VK_T"));
 				
 				smartTriggerTimeout = Int32.Parse(Properties.GetSetting("SmartTriggerTimeout", "1000"));
 				Logger.log("Loaded setting SmartTriggerTimeout=" + smartTriggerTimeout.ToString());
@@ -85,7 +81,7 @@ namespace CoverMe
 				if (useSmartTrigger)
 					labelInfo.Text = "Smart trigger is enabled";
 				else
-					labelInfo.Text = "Press " + triggerCode.ToString() + " to type altitude";
+					labelInfo.Text = "Press " + simpleTriggerCodes.ToString() + " to type altitude";
 				if (typeHeading)
 					labelInfo.Text += Environment.NewLine + "HDG is enabled";
 				
@@ -140,10 +136,10 @@ namespace CoverMe
 		bool isTriggered() {
 			// Trigger whenever user types T-4-1/2
 			if (useSmartTrigger) {
-				if (InputSimulator.IsKeyDown(teamCode) || InputSimulator.IsKeyDown(squadCode))
+				if (Helpers.IsOneKeyDown(quickChatCodes))
 				{
 					if (smartTriggerStage != 1)
-						Logger.log(teamCode.ToString() + " or " + squadCode.ToString() + " is down, stage=1");
+						Logger.log("SmartTrigger stage is now 1");
 					
 					smartTriggerStage = 1;
 					lastSmartTriggerStageTime = Environment.TickCount;
@@ -151,7 +147,7 @@ namespace CoverMe
 				if (InputSimulator.IsKeyDown(VirtualKeyCode.VK_4) && smartTriggerStage == 1 && Environment.TickCount - lastSmartTriggerStageTime < smartTriggerTimeout)
 				{
 					if (smartTriggerStage != 2)
-						Logger.log("VK_4 is down, stage=2");
+						Logger.log("SmartTrigger stage is now 2");
 					smartTriggerStage = 2;
 					lastSmartTriggerStageTime = Environment.TickCount;
 				}
@@ -159,7 +155,6 @@ namespace CoverMe
 				{
 					if (smartTriggerStage == 2 && Environment.TickCount - lastSmartTriggerStageTime < smartTriggerTimeout)
 					{
-						Logger.log("VK_1 or VK_2 is down, stage=0");
 						Logger.log("SmartTrigger is now triggered");
 						smartTriggerStage = 0;
 						return true;
@@ -168,12 +163,9 @@ namespace CoverMe
 			}
 			// Trigger when user presses set key
 			else {
-				bool keystate = InputSimulator.IsKeyDown(triggerCode);
-			
-				if (keystate)
+				if (Helpers.IsOneKeyDown(simpleTriggerCodes))
 				{
-					Logger.log("Trigger key '" +  triggerCode.ToString() + "' is held down");
-					Logger.log("Trigger is now triggered");
+					Logger.log("Simple trigger is now triggered");
 					return true;
 				}
 			}

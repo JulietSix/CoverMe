@@ -9,8 +9,8 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using WindowsInput;
 
 namespace CoverMe
 {
@@ -57,6 +57,18 @@ namespace CoverMe
 				enums.Add((T)Enum.Parse(typeof(T), element));
 			
 			return enums;
+		}
+		
+		/// <summary>
+		/// Checks wether one of the keys in the given list is pressed
+		/// </summary>
+		/// <param name="keys">A list of virtual keys</param>
+		/// <returns>True if at least one key is pressed, otherwise false</returns>
+		public static bool IsOneKeyDown(List<VirtualKeyCode> keys) {
+			foreach (VirtualKeyCode key in keys)
+				if (InputSimulator.IsKeyDown(key))
+					return true;
+			return false;
 		}
 	}
 }

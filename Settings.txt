@@ -1,4 +1,5 @@
 # Settings file for CoverMe
+# <- This character marks a comment, editing these has no effect
 
 # 'TypeHeading' defines wether the Heading should be typed as well.
 # Settings are True (enabled) and False (disabled)
@@ -20,23 +21,27 @@ LowFpsMode=False
 UseSmartTrigger=True
 
 # The following settings only apply when SmartTrigger is enabled
-# 'TeamQuickChatKey' and 'SquadQuickChatKey' define which keys are used to open the quick
-# chat menu for both team and squad chat, as the name suggests. If you do not want to use 
-# both, bind them to the same key. (Imagine you only want to print altitude when using team 
-# chat, bind both team- and squad-chat to VK_T, that is if you are using the default 'T'-
-# key for team-quickchat)
+# 'QuickChatKeys' defines which keys are used to open the quick chat menu, as the name 
+# suggests. For a list of virtual key codes consult KeyNames.txt
+# This collection can contain multiple comma-separated values, for example
+# QuickChatKeys=VK_T
+# or
+# QuickChatKeys=VK_T,VK_K
 
-TeamQuickChatKey=VK_T
-SquadQuickChatKey=VK_K
+QuickChatKeys=VK_T,VK_K
 
 # 'SmartTriggerTimeout' is the amount of miliseconds that can pass in between keystrokes.
-# For example if this setting is 1000, between each of the strokes T-4-2 a maximum of 1
-# second may pass, otherwise it will not be detected
+# For example if this setting is 1500, between each of the strokes T-4-2 a maximum of 1.5
+# seconds may pass, otherwise it will not be detected
 
-SmartTriggerTimeout=1000
+SmartTriggerTimeout=1500
 
 # The following settings only apply when SmartTrigger is disabled
-# 'Trigger' is the virtual key code of the key that triggers CoverMe
+# 'SimpleTriggerKeys' is a collection of the virtual key codes that trigger CoverMe
 # For a list of virtual key codes consult KeyNames.txt
+# This collection can contain multiple comma-separated values, for example
+# SimpleTriggerKeys=VK_Z
+# or
+# SimpleTriggerKeys=VK_Z,VK_T,VK_ESCAPE
 
-Trigger=VK_Z
+SimpleTriggerKeys=VK_Z
