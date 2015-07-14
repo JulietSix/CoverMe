@@ -117,16 +117,21 @@ namespace CoverMe
 		/// </summary>
 		/// <returns>True if can retrigger, otherwise false</returns>
 		bool canRetriggerAlready() {
-				if (Environment.TickCount - lastTriggerTime > TRIGGER_TIMEOUT)
-				{
-					lastTriggerTime = Environment.TickCount;
-					return true;
-				}
-				else
-				{
-					Logger.log("Cannot retrigger already, timeout not met");
-					return false;
-				}
+			// Binary AND of MaxValue with TickCount removes negative sign if PC has been running
+			// for more than 29 days. Errors can still occur if the TickCount passes the
+			// Overflow value while CoverMe is running as the new TickCount will be smaller
+			// than the old one, however chances are much lower as this is a short timeframe.
+			// TODO: Completely elimate the risk of an overflow
+			if ((Environment.TickCount & int.MaxValue) - lastTriggerTime > TRIGGER_TIMEOUT)
+			{
+				lastTriggerTime = Environment.TickCount;
+				return true;
+			}
+			else
+			{
+				Logger.log("Cannot retrigger already, timeout not met");
+				return false;
+			}
 		}
 		
 		/// <summary>
