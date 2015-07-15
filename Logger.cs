@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.Diagnostics;
 
 namespace CoverMe
 {
@@ -31,7 +32,7 @@ namespace CoverMe
 		
 		private Logger() {}
 		
-		static int startTime = 0;
+		private static Stopwatch loggerStopwatch = Stopwatch.StartNew();
 		private static FinalizerDummy mFinalizer = new FinalizerDummy();
 		
 		/// <summary>
@@ -51,18 +52,14 @@ namespace CoverMe
 		/// <param name="message">The message</param>
 		public static void log(String message) {
 			
-			// If we have not logged anything, set the current time as the start time of the log
-			if (startTime == 0)
-				startTime = Environment.TickCount;
-			
 			// Remove NewLine and LineFeed
 			String s = message.Replace('\n', ' ');
 			s = message.Replace("\r", "");
 			
 			// Calculate time
-			int time = Environment.TickCount - startTime;
-			int timeSecs = time / 1000;
-			int timeMilis = time % 1000;
+			long time = loggerStopwatch.ElapsedMilliseconds;
+			long timeSecs = time / 1000;
+			long timeMilis = time % 1000;
 			
 			// Format time
 			string sTimeMilis = timeMilis.ToString().PadLeft(4, '0');

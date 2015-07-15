@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -27,8 +28,11 @@ namespace CoverMe
 		public const int TRIGGER_TIMEOUT = 1000;
 		public const int MAXIMUM_TRIES = 3;
 		
-		int lastSmartTriggerStageTime;
-		int lastTriggerTime;
+		Stopwatch smartTriggerTimeoutWatch;
+		Stopwatch coverMeTimeoutWatch;
+		
+		//int lastSmartTriggerStageTime;
+		//int lastTriggerTime;
 		int smartTriggerStage;
 		uint errorCode;
 
@@ -73,9 +77,10 @@ namespace CoverMe
 				
 				SpecialKeyHelper.StrokeDelay = lowFPSmode ? 200 : 50;
 
-				lastSmartTriggerStageTime = 0;
-				lastTriggerTime = 0;
+				smartTriggerTimeoutWatch = Stopwatch.StartNew();
 				smartTriggerStage = 0;
+				
+				coverMeTimeoutWatch = Stopwatch.StartNew();
 				
 				// Prepare UI elements
 				if (useSmartTrigger)
@@ -117,14 +122,9 @@ namespace CoverMe
 		/// </summary>
 		/// <returns>True if can retrigger, otherwise false</returns>
 		bool canRetriggerAlready() {
-			// Binary AND of MaxValue with TickCount removes negative sign if PC has been running
-			// for more than 29 days. Errors can still occur if the TickCount passes the
-			// Overflow value while CoverMe is running as the new TickCount will be smaller
-			// than the old one, however chances are much lower as this is a short timeframe.
-			// TODO: Completely elimate the risk of an overflow
-			if ((Environment.TickCount & int.MaxValue) - lastTriggerTime > TRIGGER_TIMEOUT)
+			if (coverMeTimeoutWatch.ElapsedMilliseconds > TRIGGER_TIMEOUT)
 			{
-				lastTriggerTime = Environment.TickCount;
+				Helpers.RestartStopwatch(coverMeTimeoutWatch);
 				return true;
 			}
 			else
@@ -147,18 +147,18 @@ namespace CoverMe
 						Logger.log("SmartTrigger stage is now 1");
 					
 					smartTriggerStage = 1;
-					lastSmartTriggerStageTime = Environment.TickCount;
+					Helpers.RestartStopwatch(smartTriggerTimeoutWatch);
 				}
-				if (InputSimulator.IsKeyDown(VirtualKeyCode.VK_4) && smartTriggerStage == 1 && Environment.TickCount - lastSmartTriggerStageTime < smartTriggerTimeout)
+				if (InputSimulator.IsKeyDown(VirtualKeyCode.VK_4) && smartTriggerStage == 1 && smartTriggerTimeoutWatch.ElapsedMilliseconds < smartTriggerTimeout)
 				{
 					if (smartTriggerStage != 2)
 						Logger.log("SmartTrigger stage is now 2");
 					smartTriggerStage = 2;
-					lastSmartTriggerStageTime = Environment.TickCount;
+					Helpers.RestartStopwatch(smartTriggerTimeoutWatch);
 				}
 				if (InputSimulator.IsKeyDown(VirtualKeyCode.VK_1) || InputSimulator.IsKeyDown(VirtualKeyCode.VK_2))
 				{
-					if (smartTriggerStage == 2 && Environment.TickCount - lastSmartTriggerStageTime < smartTriggerTimeout)
+					if (smartTriggerStage == 2 && smartTriggerTimeoutWatch.ElapsedMilliseconds < smartTriggerTimeout)
 					{
 						Logger.log("SmartTrigger is now triggered");
 						smartTriggerStage = 0;

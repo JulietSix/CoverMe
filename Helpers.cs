@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using WindowsInput;
 
 namespace CoverMe
@@ -17,13 +18,11 @@ namespace CoverMe
 	/// <summary>
 	/// Collection of general helper-functions
 	/// </summary>
-	public class Helpers
+	public static class Helpers
 	{
 		private static readonly char[] ARRAY_SEPARATORS = { ',' };
 		
 		public const double METER_PER_FEET = 0.3048;
-		
-		private Helpers() {}
 		
 		/// <summary>
 		/// Rounds an Integer to a pre-decimal position
@@ -69,6 +68,12 @@ namespace CoverMe
 				if (InputSimulator.IsKeyDown(key))
 					return true;
 			return false;
+		}
+		
+		public static void RestartStopwatch(Stopwatch s)
+		{
+			s.Reset();
+			s.Start();
 		}
 	}
 }
