@@ -28,20 +28,16 @@ namespace CoverMe
 		public const int TRIGGER_TIMEOUT = 1000;
 		public const int MAXIMUM_TRIES = 3;
 		
-		Stopwatch smartTriggerTimeoutWatch;
 		Stopwatch coverMeTimeoutWatch;
 		
-		//int lastSmartTriggerStageTime;
-		//int lastTriggerTime;
-		int smartTriggerStage;
+		Trigger mTrigger;
+		
 		uint errorCode;
 
 		List<VirtualKeyCode> simpleTriggerCodes;
-		
 		List<VirtualKeyCode> quickChatCodes;
-		
-		int smartTriggerTimeout = 1000;
 		bool useSmartTrigger = true;
+		int smartTriggerTimeout = 1000;
 		
 		bool typeHeading = true;
 		bool lowFPSmode = false;
@@ -76,11 +72,11 @@ namespace CoverMe
 				Logger.log("Loaded setting LowFpsMode=" + lowFPSmode.ToString());
 				
 				SpecialKeyHelper.StrokeDelay = lowFPSmode ? 200 : 50;
-
-				smartTriggerTimeoutWatch = Stopwatch.StartNew();
-				smartTriggerStage = 0;
 				
 				coverMeTimeoutWatch = Stopwatch.StartNew();
+				
+				mTrigger = new Trigger(useSmartTrigger, useSmartTrigger ? quickChatCodes : simpleTriggerCodes);
+				mTrigger.smartTriggerTimeout = smartTriggerTimeout;
 				
 				// Prepare UI elements
 				if (useSmartTrigger)
@@ -104,7 +100,7 @@ namespace CoverMe
 		
 		void TimerUpdateTick(object sender, EventArgs e)
 		{
-			if (isTriggered() && canRetriggerAlready())
+			if (mTrigger.isTriggered() && canRetriggerAlready())
 			{
 				Logger.log("Firing CoverMe-action");
 				
@@ -132,50 +128,6 @@ namespace CoverMe
 				Logger.log("Cannot retrigger already, timeout not met");
 				return false;
 			}
-		}
-		
-		/// <summary>
-		/// Checks wether the current Trigger criteria is met
-		/// </summary>
-		/// <returns>True if the user has triggered an action, otherwise false</returns>
-		bool isTriggered() {
-			// Trigger whenever user types T-4-1/2
-			if (useSmartTrigger) {
-				if (Helpers.IsOneKeyDown(quickChatCodes))
-				{
-					if (smartTriggerStage != 1)
-						Logger.log("SmartTrigger stage is now 1");
-					
-					smartTriggerStage = 1;
-					Helpers.RestartStopwatch(smartTriggerTimeoutWatch);
-				}
-				if (InputSimulator.IsKeyDown(VirtualKeyCode.VK_4) && smartTriggerStage == 1 && smartTriggerTimeoutWatch.ElapsedMilliseconds < smartTriggerTimeout)
-				{
-					if (smartTriggerStage != 2)
-						Logger.log("SmartTrigger stage is now 2");
-					smartTriggerStage = 2;
-					Helpers.RestartStopwatch(smartTriggerTimeoutWatch);
-				}
-				if (InputSimulator.IsKeyDown(VirtualKeyCode.VK_1) || InputSimulator.IsKeyDown(VirtualKeyCode.VK_2))
-				{
-					if (smartTriggerStage == 2 && smartTriggerTimeoutWatch.ElapsedMilliseconds < smartTriggerTimeout)
-					{
-						Logger.log("SmartTrigger is now triggered");
-						smartTriggerStage = 0;
-						return true;
-					}
-				}
-			}
-			// Trigger when user presses set key
-			else {
-				if (Helpers.IsOneKeyDown(simpleTriggerCodes))
-				{
-					Logger.log("Simple trigger is now triggered");
-					return true;
-				}
-			}
-			
-			return false;
 		}
 		
 		/// <summary>
