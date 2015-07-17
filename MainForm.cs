@@ -208,6 +208,12 @@ namespace CoverMe
 				Logger.log("-> Altitude_Meter = " + i_alt_in_m.ToString());
 				Logger.log("-> Altitude_Feet  = " + i_alt_in_ft.ToString());
 				
+				if(!data.isGoodAltiude())
+				{
+					Logger.log("Altitude is exceeding the reasonable range, aborting");
+					return false;
+				}
+				
 				StringBuilder sb = new StringBuilder();
 				sb.Append(Helpers.RoundPreDecimal(i_alt_in_m, 2));
 				sb.Append(" m / ");

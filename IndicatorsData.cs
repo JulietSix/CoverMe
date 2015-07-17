@@ -51,6 +51,14 @@ namespace CoverMe
 			return this.valid;
 		}
 		
+		/// <summary>
+		/// Checks wether the stored altitude is in a reasonable range
+		/// </summary>
+		/// <returns>True if altitude seems ok, otherwise false</returns>
+		public bool isGoodAltiude() {
+			return getAltitudeMeters() >= 0;
+		}
+		
 		public int getAltitudeMeters() {
 			// altitude_10k contains altitude for gauges in ft
 			// If it has default value it was not present and
