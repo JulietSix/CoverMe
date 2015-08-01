@@ -41,6 +41,7 @@ namespace CoverMe
 		
 		bool typeHeading = true;
 		bool lowFPSmode = false;
+		bool enableLogging = false;
 		
 		public MainForm()
 		{
@@ -52,6 +53,9 @@ namespace CoverMe
 			try {
 				// Load settings
 				Properties.LoadSettings();
+				
+				enableLogging = Boolean.Parse(Properties.GetSetting("EnableLogging", "False"));
+				Logger.log("Loaded setting EnableLogging=" + enableLogging.ToString());
 
 				simpleTriggerCodes = Helpers.ParseEnumArray<VirtualKeyCode>(Properties.GetSetting("SimpleTriggerKeys", "VK_Z"));
 				Logger.log("Loaded setting SimpleTriggerKeysr=" + Properties.GetSetting("SimpleTriggerKeys", "VK_Z"));
@@ -78,6 +82,9 @@ namespace CoverMe
 				mTrigger = new Trigger(useSmartTrigger, useSmartTrigger ? quickChatCodes : simpleTriggerCodes);
 				mTrigger.smartTriggerTimeout = smartTriggerTimeout;
 				
+				if (enableLogging)
+					Logger.EnableLogging();
+				
 				// Prepare UI elements
 				if (useSmartTrigger)
 					labelInfo.Text = "Smart trigger is enabled";
@@ -92,8 +99,11 @@ namespace CoverMe
 			}
 			catch (Exception ex)
 			{
+				MessageBox.Show(ex.Message + "\n\nA log was automatically created", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				
+				Logger.EnableLogging();
 				Logger.logException("Error initialising form", ex);
-				MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				
 				Environment.Exit(1);
 			}
 		}

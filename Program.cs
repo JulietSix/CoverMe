@@ -33,7 +33,9 @@ namespace CoverMe
 				run();
 			}
 			catch (Exception e) {
-				MessageBox.Show(e.Message, "Error - " + e.GetType().ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(e.Message + "\n\nA log was automatically created", "Error - " + e.GetType().ToString(), MessageBoxButtons.OK, MessageBoxIcon.Error);
+				
+				Logger.EnableLogging();
 				Logger.logException("Unexpected Exception, program is terminating", e);
 			}
 		}

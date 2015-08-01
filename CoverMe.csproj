@@ -74,7 +74,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Debug.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Include="InputSimulator.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -45,3 +45,9 @@ SmartTriggerTimeout=1500
 # SimpleTriggerKeys=VK_Z,VK_T,VK_ESCAPE
 
 SimpleTriggerKeys=VK_Z
+
+# This settings enables log ouput for debugging purposes
+# Change to 'True' if you are experiencing errors or bugs and want to send me a
+# bug report with the log.
+
+EnableLogging=False

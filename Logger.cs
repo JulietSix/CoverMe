@@ -10,6 +10,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace CoverMe
 {
@@ -19,6 +20,14 @@ namespace CoverMe
 	/// </summary>
 	public class Logger
 	{
+		// Write to memory stream until told to write to a file
+		private static MemoryStream tempStream;
+		private static StreamWriter logWriter = new StreamWriter(tempStream = new MemoryStream());
+		private static bool loggingToFile = false;
+		
+		private static Stopwatch loggerStopwatch = Stopwatch.StartNew();
+		private static FinalizerDummy mFinalizer = new FinalizerDummy();
+		
 		/// <summary>
 		/// Simply used to have an object referenced by the GC-list do be finalized when the
 		/// program is terminated, presenting a way to close the log when the program is
@@ -31,9 +40,40 @@ namespace CoverMe
 		}
 		
 		private Logger() {}
+
+		private static void LogToNewFile() {
+			DateTime now = DateTime.Now;
+			
+			// Flush to old stream
+			logWriter.Flush();
+			
+			// Create a new file to which the logger writes instead
+			logWriter = new StreamWriter("log_" 
+			                               + now.Day.ToString() + "_"
+			                               + now.Month.ToString() + "_"
+			                               + now.Year.ToString() + "__"
+			                               + now.Hour.ToString() + "_"
+			                               + now.Minute.ToString() + ".txt"
+			                              );
+			
+			if (!loggingToFile)
+			{
+				// Write any content previously in the memory stream to the new stream
+				StreamReader tempReader = new StreamReader(tempStream);
+				tempReader.BaseStream.Seek(0, SeekOrigin.Begin);
+				logWriter.Write(tempReader.ReadToEnd());
+				
+				// Clear the memory stream
+				tempStream.SetLength(0);
+				
+				loggingToFile = true;
+			}
+		}
 		
-		private static Stopwatch loggerStopwatch = Stopwatch.StartNew();
-		private static FinalizerDummy mFinalizer = new FinalizerDummy();
+		public static void EnableLogging() {
+			if (!loggingToFile)
+				LogToNewFile();
+		}
 		
 		/// <summary>
 		/// Logs an Exception
@@ -66,18 +106,19 @@ namespace CoverMe
 			string sTimeSecs = timeSecs.ToString().PadLeft(5, '0');
 			
 			// Print
-			Console.Write(sTimeSecs);
-			Console.Write('.');
-			Console.Write(sTimeMilis);
-			Console.Write(' ');
-			Console.WriteLine(s);
+			logWriter.Write(sTimeSecs);
+			logWriter.Write('.');
+			logWriter.Write(sTimeMilis);
+			logWriter.Write(' ');
+			logWriter.WriteLine(s);
 		}
 		
 		/// <summary>
 		/// Stops logging on program termination, flushing IO streams
 		/// </summary>
 		private static void FinishLogging() {
-			Console.Out.Flush();
+			logWriter.Flush();
+			logWriter.Close();
 		}
 	}
 }
